@@ -19,6 +19,7 @@ export default defineConfig({
   manifest: {
     name: 'LAMB',
     description: 'LAMB browser extension',
+    permissions: ['storage'],
   },
   webExt: {
     binaries: bravePath ? { brave: bravePath } : {},

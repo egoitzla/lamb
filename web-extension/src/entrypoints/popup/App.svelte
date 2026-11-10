@@ -2,6 +2,7 @@
   import { auth } from '@/lib/auth.svelte.js';
   import LoginForm from '@/lib/components/LoginForm.svelte';
   import UserCard from '@/lib/components/UserCard.svelte';
+  import MoodleCard from '@/lib/components/MoodleCard.svelte';
 
   auth.init();
 </script>
@@ -15,5 +16,9 @@
     <UserCard session={auth.session} />
   {:else}
     <LoginForm />
+  {/if}
+
+  {#if auth.status !== 'loading'}
+    <MoodleCard session={auth.session} />
   {/if}
 </main>

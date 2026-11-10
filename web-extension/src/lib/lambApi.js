@@ -118,3 +118,35 @@ export async function fetchMe(serverUrl, token) {
   }
   return data.data;
 }
+
+/**
+ * @typedef {Object} MoodleConnection
+ * @property {boolean} connected - LAMB has a working Moodle connection for this creator
+ * @property {string | null} baseUrl - Moodle site LAMB is connected to
+ * @property {number | null} moodleUserId - Moodle user id verified when connecting
+ * @property {string | null} username
+ */
+
+/**
+ * Fetches the creator's Moodle connection as stored in LAMB (`GET /creator/moodle/connection`).
+ * Returns null when the Moodle connector is not available on this server.
+ * @param {string} serverUrl
+ * @param {string} token
+ * @returns {Promise<MoodleConnection | null>}
+ */
+export async function fetchMoodleConnection(serverUrl, token) {
+  const response = await request(`${serverUrl}/creator/moodle/connection`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (response.status === 401) throw new SessionExpiredError();
+  if (!response.ok) return null;
+
+  const data = await readJson(response);
+  const connection = data.connection ?? {};
+  return {
+    connected: Boolean(data.connected),
+    baseUrl: connection.base_url ?? null,
+    moodleUserId: connection.moodle_user_id ?? null,
+    username: connection.username ?? null,
+  };
+}

@@ -1,5 +1,5 @@
-<script>
-  import { auth } from '@/lib/auth.svelte.js';
+<script lang="ts">
+  import { auth } from '@/lib/auth.svelte';
   import LoginForm from '@/lib/components/LoginForm.svelte';
   import UserCard from '@/lib/components/UserCard.svelte';
 

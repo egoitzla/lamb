@@ -1,11 +1,9 @@
 /**
  * Validates a user-typed server URL and strips trailing slashes.
- * @param {string} raw
- * @returns {string} e.g. `https://lamb.example.org` or `https://example.org/lamb`
+ * @returns e.g. `https://lamb.example.org` or `https://example.org/lamb`
  */
-export function normalizeServerUrl(raw) {
-  /** @type {URL} */
-  let url;
+export function normalizeServerUrl(raw: string): string {
+  let url: URL;
   try {
     url = new URL(raw.trim());
   } catch {

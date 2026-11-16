@@ -1,15 +1,13 @@
-<script>
-  import { auth } from '../auth.svelte.js';
+<script lang="ts">
+  import { auth } from '../auth.svelte';
 
   let serverUrl = $state(auth.serverUrl);
   let email = $state('');
   let password = $state('');
   let submitting = $state(false);
-  /** @type {string | null} */
-  let error = $state(null);
+  let error = $state<string | null>(null);
 
-  /** @param {SubmitEvent} event */
-  async function onsubmit(event) {
+  async function onsubmit(event: SubmitEvent) {
     event.preventDefault();
     submitting = true;
     error = null;

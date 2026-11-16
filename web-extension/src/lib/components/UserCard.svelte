@@ -1,8 +1,8 @@
-<script>
-  import { auth } from '../auth.svelte.js';
+<script lang="ts">
+  import { auth } from '../auth.svelte';
+  import type { LambSession } from '../types';
 
-  /** @type {{ session: import('../types.js').LambSession }} */
-  let { session } = $props();
+  let { session }: { session: LambSession } = $props();
 </script>
 
 <div class="flex flex-col gap-3">

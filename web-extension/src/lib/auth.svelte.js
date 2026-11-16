@@ -3,7 +3,7 @@ import { DEFAULT_SERVER_URL, serverUrlItem, sessionItem } from './session.js';
 
 /** @typedef {import('./lambApi.js').LambSession} LambSession */
 
-/** Reactive auth state shared by the popup components. */
+/** Reactive auth state shared by the side panel components. */
 class AuthState {
   /** @type {'loading' | 'logged-out' | 'logged-in'} */
   status = $state('loading');

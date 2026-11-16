@@ -19,8 +19,9 @@ export default defineConfig({
   manifest: {
     name: 'LAMB',
     description: 'LAMB browser extension',
-    // activeTab + scripting: read the Moodle page the user is on when they open the popup.
-    permissions: ['storage', 'activeTab', 'scripting'],
+    permissions: ['storage'],
+    // Toolbar icon; the background script makes clicking it open the side panel.
+    action: { default_title: 'Open LAMB' },
   },
   webExt: {
     binaries: bravePath ? { brave: bravePath } : {},

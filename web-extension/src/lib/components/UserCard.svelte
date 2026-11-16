@@ -1,7 +1,7 @@
 <script>
   import { auth } from '../auth.svelte.js';
 
-  /** @type {{ session: import('../lambApi.js').LambSession }} */
+  /** @type {{ session: import('../types.js').LambSession }} */
   let { session } = $props();
 </script>
 

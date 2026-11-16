@@ -1,10 +1,12 @@
+/**
+ * Persistent extension state, kept in `browser.storage.local`.
+ */
 import { storage } from '#imports';
+import { DEFAULT_SERVER_URL } from './config.js';
 
-/** @typedef {import('./lambApi.js').LambSession} LambSession */
+/** @typedef {import('./types.js').LambSession} LambSession */
 
-export const DEFAULT_SERVER_URL = 'http://localhost:9099';
-
-/** Current session, or null when logged out. Lives in `browser.storage.local`. */
+/** Current session, or null when logged out. */
 export const sessionItem = storage.defineItem(
   'local:session',
   /** @type {{ fallback: LambSession | null }} */ ({ fallback: null }),

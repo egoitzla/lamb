@@ -1,7 +1,10 @@
-import { fetchMe, login, normalizeServerUrl, SessionExpiredError } from './lambApi.js';
-import { DEFAULT_SERVER_URL, serverUrlItem, sessionItem } from './session.js';
+import { fetchMe, login } from './api/auth.js';
+import { SessionExpiredError } from './api/errors.js';
+import { DEFAULT_SERVER_URL } from './config.js';
+import { serverUrlItem, sessionItem } from './storage.js';
+import { normalizeServerUrl } from './url.js';
 
-/** @typedef {import('./lambApi.js').LambSession} LambSession */
+/** @typedef {import('./types.js').LambSession} LambSession */
 
 /** Reactive auth state shared by the side panel components. */
 class AuthState {

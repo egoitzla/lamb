@@ -16,35 +16,32 @@ export function isMoodleCourseUrl(rawUrl: string | undefined): boolean {
 
 /**
  * Injected into the page, so it must be self-contained (no imports or outer
- * variables). Only teachers (users who can edit the course) get the
- * "Edit mode" switch (Moodle 4+) or the "Turn editing on" button (Moodle 3).
+ * variables). Only teachers (users who can edit the course) get an editing
+ * control, so editing mode being switched ON right now means a teacher.
  */
-function pageHasEnabledEditControl(): boolean {
-  const selectors = [
-    // Moodle 4.x: "Edit mode" switch in the page header.
-    '.editmode-switch-form input[type="checkbox"]',
-    'input[name="setmode"]',
-    // Moodle 3.x / Boost: "Turn editing on/off" button.
-    'form[action*="editmode.php"] button',
-    'form[action*="editmode.php"] input[type="submit"]',
-    'form[action*="/course/view.php"] input[name="edit"]',
-    'a[href*="edit=on"]',
-    'a[href*="edit=off"]',
-  ];
-  for (const selector of selectors) {
-    for (const el of document.querySelectorAll<HTMLElement>(selector)) {
-      if (!(el as HTMLInputElement).disabled && el.getAttribute('aria-disabled') !== 'true') {
-        return true;
-      }
-    }
+function pageHasEditModeOn(): boolean {
+  // Moodle 4.x: the "Edit mode" switch is checked.
+  const switches = document.querySelectorAll<HTMLInputElement>(
+    '.editmode-switch-form input[type="checkbox"], input[name="setmode"]',
+  );
+  for (const input of switches) {
+    if (input.checked && !input.disabled) return true;
   }
-  // Editing already switched on: the body carries the `editing` class.
+  // Moodle 3.x: with editing on, the button/link offers "Turn editing off".
+  if (
+    document.querySelector(
+      'form[action*="editmode.php"] input[name="edit"][value="off"], a[href*="edit=off"]',
+    )
+  ) {
+    return true;
+  }
+  // Fallback: Moodle marks the body with `editing` while editing mode is on.
   return document.body.classList.contains('editing');
 }
 
 /**
  * Whether the user is a teacher in the Moodle course open in the active tab:
- * the tab URL is a course page and the editing control is available.
+ * the tab URL is a course page and editing mode is currently switched on.
  * Resolves to `false` if there is no such tab or the page can't be inspected.
  */
 export async function isTeacherInCurrentCourse(): Promise<boolean> {
@@ -54,7 +51,7 @@ export async function isTeacherInCurrentCourse(): Promise<boolean> {
   try {
     const [result] = await browser.scripting.executeScript({
       target: { tabId: tab.id },
-      func: pageHasEnabledEditControl,
+      func: pageHasEditModeOn,
     });
     return result?.result === true;
   } catch {

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { auth } from '@/lib/auth.svelte';
   import AssistantList from '@/lib/components/AssistantList.svelte';
+  import TeacherCheck from '@/lib/components/TeacherCheck.svelte';
   import LoginForm from '@/lib/components/LoginForm.svelte';
   import UserCard from '@/lib/components/UserCard.svelte';
 
@@ -14,6 +15,7 @@
     <p class="text-sm text-gray-500">Loading…</p>
   {:else if auth.session}
     <UserCard session={auth.session} />
+    <TeacherCheck />
     <AssistantList session={auth.session} />
   {:else}
     <LoginForm />

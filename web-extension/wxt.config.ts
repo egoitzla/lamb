@@ -18,7 +18,10 @@ export default defineConfig({
   manifest: {
     name: 'LAMB',
     description: 'LAMB browser extension',
-    permissions: ['storage'],
+    permissions: ['storage', 'scripting'],
+    // TODO: the Moodle URL is hardcoded for now; make it configurable (e.g. optional
+    // host permissions requested for the user's own Moodle server).
+    host_permissions: ['https://moodle.ikasten.io/*'],
     // Toolbar icon; the background script makes clicking it open the side panel.
     action: { default_title: 'Open LAMB' },
   },

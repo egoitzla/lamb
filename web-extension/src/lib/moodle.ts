@@ -3,12 +3,17 @@
  * from extension pages (e.g. the side panel).
  */
 
-/** True if the URL is a Moodle course page (`…/course/view.php?id=N`). */
+/**
+ * True if the URL is a Moodle page inside a course: any `…/course/*.php?id=N`
+ * (`view.php`, `section.php`, …). Requiring `id` leaves out the pages that list
+ * courses, such as `/course/index.php`. Note that `id` is not always the course
+ * id: in `section.php` it is the section id.
+ */
 export function isMoodleCourseUrl(rawUrl: string | undefined): boolean {
   if (!rawUrl) return false;
   try {
     const url = new URL(rawUrl);
-    return /\/course\/view\.php$/.test(url.pathname) && /^\d+$/.test(url.searchParams.get('id') ?? '');
+    return /\/course\/[^/]+\.php$/.test(url.pathname) && /^\d+$/.test(url.searchParams.get('id') ?? '');
   } catch {
     return false;
   }
@@ -58,4 +63,35 @@ export async function isTeacherInCurrentCourse(): Promise<boolean> {
     // Restricted page or missing host permission.
     return false;
   }
+}
+
+/**
+ * Calls `onChange` whenever the page in front of the user may have changed: the
+ * active tab loads or changes URL (Moodle reloads the page when editing mode is
+ * toggled), the user switches tab, or focuses another window. Returns a function
+ * that stops watching.
+ */
+export function watchActivePage(onChange: () => void): () => void {
+  const onUpdated: Parameters<typeof browser.tabs.onUpdated.addListener>[0] = (
+    _tabId,
+    changeInfo,
+    tab,
+  ) => {
+    if (tab.active && (changeInfo.url || changeInfo.status === 'complete')) onChange();
+  };
+  const onActivated = () => onChange();
+  const onFocusChanged = (windowId: number) => {
+    // WINDOW_ID_NONE: the browser lost focus, so the page is still the same.
+    if (windowId !== browser.windows.WINDOW_ID_NONE) onChange();
+  };
+
+  browser.tabs.onUpdated.addListener(onUpdated);
+  browser.tabs.onActivated.addListener(onActivated);
+  browser.windows.onFocusChanged.addListener(onFocusChanged);
+
+  return () => {
+    browser.tabs.onUpdated.removeListener(onUpdated);
+    browser.tabs.onActivated.removeListener(onActivated);
+    browser.windows.onFocusChanged.removeListener(onFocusChanged);
+  };
 }

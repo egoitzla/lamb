@@ -1,28 +1,31 @@
 <script lang="ts">
-  import { isTeacherInCurrentCourse } from '../moodle';
+  import { onMount } from 'svelte';
+  import { isTeacherInCurrentCourse, watchActivePage } from '../moodle';
 
   let isTeacher = $state<boolean | null>(null);
+  let lastCheck = 0;
 
   async function check() {
-    isTeacher = null;
-    isTeacher = await isTeacherInCurrentCourse();
+    const id = ++lastCheck;
+    const result = await isTeacherInCurrentCourse();
+    // The page changed again while checking: a newer check has the answer.
+    if (id !== lastCheck) return;
+    isTeacher = result;
     console.log('[LAMB] isTeacherInCurrentCourse:', isTeacher);
   }
 
-  check();
+  onMount(() => {
+    check();
+    return watchActivePage(check);
+  });
 </script>
 
-<div class="flex items-center justify-between gap-2 rounded-md border border-gray-200 p-3 text-sm">
-  <span class="text-gray-800">
-    {#if isTeacher === null}
-      Checking Moodle…
-    {:else if isTeacher}
-      Teacher in this Moodle course
-    {:else}
-      Not a teacher here (or not a Moodle course page)
-    {/if}
-  </span>
-  <button class="text-gray-600 underline hover:text-gray-900" type="button" onclick={check}>
-    Recheck
-  </button>
+<div class="rounded-md border border-gray-200 p-3 text-sm text-gray-800">
+  {#if isTeacher === null}
+    Checking Moodle…
+  {:else if isTeacher}
+    Teacher in this Moodle course
+  {:else}
+    Not a teacher here (or not a Moodle course page)
+  {/if}
 </div>
